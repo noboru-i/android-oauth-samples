@@ -1,9 +1,15 @@
 package hm.orz.chaos114.oauthsamples;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+
+import java.util.Locale;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -12,6 +18,23 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Button instagramButton = (Button) findViewById(R.id.instagram_button);
+        instagramButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String clientId = getString(R.string.instagram_client_id);
+                String redirectUri = getString(R.string.instagram_redirect_uri);
+                String uriString = String.format(Locale.getDefault(),
+                        "https://instagram.com/oauth/authorize/?client_id=%s&redirect_uri=%s&response_type=token",
+                        clientId,
+                        redirectUri);
+                Uri uri = Uri.parse(uriString);
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+            }
+        });
+
     }
 
     @Override

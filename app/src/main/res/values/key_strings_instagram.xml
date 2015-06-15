@@ -1,0 +1,4 @@
+<resources>
+    <string name="instagram_client_id" translate="false">XXX</string>
+    <string name="redirect_uri" translate="false">XXX</string>
+</resources>
