@@ -11,6 +11,8 @@ import android.widget.Button;
 
 import java.util.Locale;
 
+import hm.orz.chaos114.oauthsamples.oauth.InstagramManager;
+
 
 public class MainActivity extends ActionBarActivity {
 
@@ -23,18 +25,11 @@ public class MainActivity extends ActionBarActivity {
         instagramButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String clientId = getString(R.string.instagram_client_id);
-                String redirectUri = getString(R.string.instagram_redirect_uri);
-                String uriString = String.format(Locale.getDefault(),
-                        "https://instagram.com/oauth/authorize/?client_id=%s&redirect_uri=%s&response_type=token",
-                        clientId,
-                        redirectUri);
-                Uri uri = Uri.parse(uriString);
+                Uri uri = InstagramManager.getUrl(MainActivity.this);
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
             }
         });
-
     }
 
     @Override
