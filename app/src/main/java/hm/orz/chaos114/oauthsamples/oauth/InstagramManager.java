@@ -5,12 +5,13 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Base64;
+import android.util.Log;
 
-import java.io.BufferedReader;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.Map;
@@ -45,43 +46,52 @@ public final class InstagramManager {
     public static String test(@NonNull Context context) {
         SharedPreferencesAccessor accessor = new SharedPreferencesAccessor(context);
         String accessToken = accessor.getInstagramAccessToken();
-        String clientSecret = context.getString(R.string.instagram_client_secret);
 
-        String endpoint = "/users/self";
+        String endpoint = "/users/self/media/recent";
         Map<String, String> params = new TreeMap<>();
         params.put("access_token", accessToken);
 
+        String sig = createSignature(context, endpoint, params);
+
+        String url = Uri.parse("https://api.instagram.com/v1" + endpoint).buildUpon()
+                .appendQueryParameter("access_token", accessToken)
+                .appendQueryParameter("sig", sig).build().toString();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+
+        OkHttpClient client = new OkHttpClient();
+        try {
+            Response response = client.newCall(request).execute();
+            String responseString = response.body().string();
+            Log.d("TEST", responseString);
+            return responseString;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @NonNull
+    private static String createSignature(@NonNull Context context,
+                                          @NonNull String endpoint,
+                                          @Nullable Map<String, String> params) {
+        if (params == null) {
+            params = new TreeMap<>();
+        }
+        if (!(params instanceof TreeMap)) {
+            params = new TreeMap<>(params);
+        }
+
+        String clientSecret = context.getString(R.string.instagram_client_secret);
         StringBuilder sigSource = new StringBuilder();
         sigSource.append(endpoint);
         for (TreeMap.Entry entry : params.entrySet()) {
             sigSource.append("|").append(entry.getKey()).append("=").append(entry.getValue());
         }
 
-        String sig = toHmacSHA256(sigSource.toString(), clientSecret);
-
-        HttpURLConnection con = null;
-        try {
-            URL url = new URL("https://api.instagram.com/v1" + endpoint + "?access_token=" + accessToken + "&sig=" + sig);
-            con = (HttpURLConnection) url.openConnection();
-
-            con.setRequestMethod("GET");
-            con.connect();
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
-            String line = null;
-            while((line = br.readLine()) != null) {
-                android.util.Log.d("TEST", "line = " + line);
-            }
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (con != null) {
-                con.disconnect();
-            }
-        }
-
-        return null;
+        return toHmacSHA256(sigSource.toString(), clientSecret);
     }
 
     private static String toHmacSHA256(String data, String key) {
