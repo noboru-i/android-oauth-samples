@@ -25,6 +25,9 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import hm.orz.chaos114.oauthsamples.oauth.InstagramManager;
 
+/**
+ * OAuth provider callback activity.
+ */
 public class CallbackActivity extends ActionBarActivity {
     private static final String TAG = CallbackActivity.class.getSimpleName();
 
@@ -65,7 +68,7 @@ public class CallbackActivity extends ActionBarActivity {
     private void callbackInstagram(Uri uri) {
         InstagramManager.saveToken(CallbackActivity.this, uri);
 
-        new AsyncTask<Void, Void, String>() {
+        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
                 return InstagramManager.test(CallbackActivity.this);
@@ -77,7 +80,8 @@ public class CallbackActivity extends ActionBarActivity {
 
                 setSampleImage(s);
             }
-        }.execute();
+        };
+        task.execute();
     }
 
     private void callbackFacebook() {

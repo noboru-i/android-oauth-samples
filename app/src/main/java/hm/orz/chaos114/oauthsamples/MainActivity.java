@@ -20,6 +20,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import hm.orz.chaos114.oauthsamples.oauth.InstagramManager;
 
+/**
+ * Launcher activity.
+ */
 public class MainActivity extends ActionBarActivity {
     // facebook callback manager
     CallbackManager mCallbackManager;

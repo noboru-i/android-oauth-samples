@@ -30,6 +30,11 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+    lintOptions {
+        abortOnError false
+        disable 'InvalidPackage',
+                'ContentDescription'
+    }
 }
 
 dependencies {
