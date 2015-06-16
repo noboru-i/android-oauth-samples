@@ -4,8 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+/**
+ * Accessor for SharedPreferences.
+ * Do not direct use SharedPreferences in other class.
+ */
 public final class SharedPreferencesAccessor {
     private final Context mContext;
+
     public SharedPreferencesAccessor(Context context) {
         mContext = context;
     }

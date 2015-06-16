@@ -23,7 +23,15 @@ import javax.crypto.spec.SecretKeySpec;
 import hm.orz.chaos114.oauthsamples.R;
 import hm.orz.chaos114.oauthsamples.utils.SharedPreferencesAccessor;
 
+/**
+ * Instagram API access management class.
+ */
 public final class InstagramManager {
+
+    private InstagramManager() {
+
+    }
+
     @NonNull
     public static Uri getUrl(@NonNull Context context) {
 

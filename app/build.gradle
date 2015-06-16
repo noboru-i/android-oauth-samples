@@ -30,6 +30,11 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+    lintOptions {
+        abortOnError false
+        disable 'InvalidPackage',
+                'ContentDescription'
+    }
 }
 
 dependencies {
@@ -39,6 +44,9 @@ dependencies {
     compile 'com.jakewharton:butterknife:6.1.0'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
+
+    // facebook
+    compile 'com.facebook.android:facebook-android-sdk:4.1.0'
 }
 
 apply from: "https://raw.githubusercontent.com/monstar-lab/gradle-android-ci-check/1.0.0/ci.gradle"
