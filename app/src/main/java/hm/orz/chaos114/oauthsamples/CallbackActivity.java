@@ -5,7 +5,15 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -16,6 +24,8 @@ public class CallbackActivity extends ActionBarActivity {
 
     @InjectView(R.id.callback_textview)
     TextView mTextView;
+    @InjectView(R.id.callback_sample_image)
+    ImageView mSampleImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +53,21 @@ public class CallbackActivity extends ActionBarActivity {
                 @Override
                 protected void onPostExecute(String s) {
                     mTextView.setText(s);
+
+                    setSampleImage(s);
                 }
             }.execute();
+        }
+    }
+
+    private void setSampleImage(String jsonString) {
+        try {
+            JSONObject obj = new JSONObject(jsonString);
+            JSONArray dataArray = obj.getJSONArray("data");
+            String lowResulutionImageUrl = dataArray.getJSONObject(0).getJSONObject("images").getJSONObject("low_resolution").getString("url");
+            Picasso.with(this).load(lowResulutionImageUrl).into(mSampleImageView);
+        } catch (JSONException e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 }
