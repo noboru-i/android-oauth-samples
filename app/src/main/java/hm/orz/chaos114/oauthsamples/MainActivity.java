@@ -8,11 +8,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+
+import java.util.Arrays;
+
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import hm.orz.chaos114.oauthsamples.oauth.InstagramManager;
 
 public class MainActivity extends ActionBarActivity {
+    // facebook callback manager
+    CallbackManager mCallbackManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +30,16 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         ButterKnife.inject(this);
+
+        initializeFacebook();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // facebook callback
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -44,5 +64,30 @@ public class MainActivity extends ActionBarActivity {
         Uri uri = InstagramManager.getUrl(MainActivity.this);
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         startActivity(intent);
+    }
+
+    @OnClick(R.id.facebook_button)
+    public void onClickFacebook(Button button) {
+        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "user_photos"));
+    }
+
+    private void initializeFacebook() {
+        mCallbackManager = CallbackManager.Factory.create();
+        LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                CallbackActivity.startActivity(MainActivity.this, "facebook");
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(FacebookException e) {
+
+            }
+        });
     }
 }

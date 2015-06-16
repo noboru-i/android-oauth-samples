@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 
 public final class SharedPreferencesAccessor {
     private final Context mContext;
+
     public SharedPreferencesAccessor(Context context) {
         mContext = context;
     }
