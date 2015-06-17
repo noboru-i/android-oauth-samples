@@ -2,6 +2,7 @@ package hm.orz.chaos114.oauthsamples;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -19,6 +20,7 @@ import java.util.Arrays;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import hm.orz.chaos114.oauthsamples.oauth.InstagramManager;
+import hm.orz.chaos114.oauthsamples.oauth.TwitterManager;
 
 /**
  * Launcher activity.
@@ -76,7 +78,22 @@ public class MainActivity extends ActionBarActivity {
 
     @OnClick(R.id.twitter_button)
     public void onClickTwitter(Button button) {
+        new AsyncTask<Void, Void, String>() {
 
+            @Override
+            protected String doInBackground(Void... params) {
+                return TwitterManager.getAuthorizationURL(MainActivity.this);
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                if (s == null) {
+                    return;
+                }
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(s));
+                startActivity(intent);
+            }
+        }.execute();
     }
 
     private void initializeFacebook() {
