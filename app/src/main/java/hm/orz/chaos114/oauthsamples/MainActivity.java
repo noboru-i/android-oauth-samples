@@ -74,6 +74,11 @@ public class MainActivity extends ActionBarActivity {
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "user_photos"));
     }
 
+    @OnClick(R.id.twitter_button)
+    public void onClickTwitter(Button button) {
+
+    }
+
     private void initializeFacebook() {
         mCallbackManager = CallbackManager.Factory.create();
         LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
