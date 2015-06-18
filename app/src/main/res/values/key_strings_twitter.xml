@@ -1,0 +1,4 @@
+<resources>
+    <string name="twitter_consumer_key" translate="false">XXX</string>
+    <string name="twitter_consumer_secret" translate="false">XXX</string>
+</resources>

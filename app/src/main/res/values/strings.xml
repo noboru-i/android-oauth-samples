@@ -6,4 +6,5 @@
 
     <string name="provider_name_instagram">Instagram</string>
     <string name="provider_name_facebook">Facebook</string>
+    <string name="provider_name_twitter">Twitter</string>
 </resources>

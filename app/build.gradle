@@ -47,6 +47,8 @@ dependencies {
 
     // facebook
     compile 'com.facebook.android:facebook-android-sdk:4.1.0'
+    // twitter
+    compile 'org.twitter4j:twitter4j-core:4.0.1'
 }
 
 apply from: "https://raw.githubusercontent.com/monstar-lab/gradle-android-ci-check/1.0.0/ci.gradle"

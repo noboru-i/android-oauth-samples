@@ -21,9 +21,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import hm.orz.chaos114.oauthsamples.oauth.InstagramManager;
+import hm.orz.chaos114.oauthsamples.oauth.TwitterManager;
+import twitter4j.ResponseList;
 
 /**
  * OAuth provider callback activity.
@@ -54,7 +58,11 @@ public class CallbackActivity extends ActionBarActivity {
             Uri uri = getIntent().getData();
             Log.d(TAG, "uri = " + uri);
             if (uri != null && uri.getHost().equals("android-oauth-samples.chaos114.orz.hm")) {
-                callbackInstagram(uri);
+                if (uri.getPath().equals("/instagram")) {
+                    callbackInstagram(uri);
+                } else if (uri.getPath().equals("/twitter")) {
+                    callbackTwitter(uri);
+                }
             }
             return;
         }
@@ -105,7 +113,33 @@ public class CallbackActivity extends ActionBarActivity {
                 }
             }
         }).executeAsync();
+    }
 
+    private void callbackTwitter(final Uri uri) {
+        AsyncTask<Void, Void, ResponseList<twitter4j.Status>> task = new AsyncTask<Void, Void, ResponseList<twitter4j.Status>>() {
+
+            @Override
+            protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
+                String token = uri.getQueryParameter("oauth_token");
+                String verifier = uri.getQueryParameter("oauth_verifier");
+
+                TwitterManager.auth(CallbackActivity.this, token, verifier);
+
+                return TwitterManager.query(CallbackActivity.this);
+            }
+
+            @Override
+            protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
+                mTextView.setText(statuses.toString());
+
+                List<twitter4j.Status> imageList = TwitterManager.filterOnlyImage(statuses);
+                if (imageList.size() != 0) {
+                    String url = imageList.get(0).getMediaEntities()[0].getMediaURL();
+                    Picasso.with(CallbackActivity.this).load(url).into(mSampleImageView);
+                }
+            }
+        };
+        task.execute();
     }
 
     private void setSampleImage(String jsonString) {
