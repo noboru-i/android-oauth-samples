@@ -78,7 +78,7 @@ public class MainActivity extends ActionBarActivity {
 
     @OnClick(R.id.twitter_button)
     public void onClickTwitter(Button button) {
-        new AsyncTask<Void, Void, String>() {
+        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
 
             @Override
             protected String doInBackground(Void... params) {
@@ -93,7 +93,8 @@ public class MainActivity extends ActionBarActivity {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(s));
                 startActivity(intent);
             }
-        }.execute();
+        };
+        task.execute();
     }
 
     private void initializeFacebook() {

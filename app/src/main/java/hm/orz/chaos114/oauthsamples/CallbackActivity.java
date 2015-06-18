@@ -116,7 +116,7 @@ public class CallbackActivity extends ActionBarActivity {
     }
 
     private void callbackTwitter(final Uri uri) {
-        new AsyncTask<Void, Void, ResponseList<twitter4j.Status>>() {
+        AsyncTask<Void, Void, ResponseList<twitter4j.Status>> task = new AsyncTask<Void, Void, ResponseList<twitter4j.Status>>() {
 
             @Override
             protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
@@ -138,7 +138,8 @@ public class CallbackActivity extends ActionBarActivity {
                     Picasso.with(CallbackActivity.this).load(url).into(mSampleImageView);
                 }
             }
-        }.execute();
+        };
+        task.execute();
     }
 
     private void setSampleImage(String jsonString) {

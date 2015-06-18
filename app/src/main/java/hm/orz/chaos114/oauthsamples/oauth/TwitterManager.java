@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -29,6 +30,7 @@ import twitter4j.conf.ConfigurationBuilder;
  * Twitter API access management class.
  */
 public final class TwitterManager {
+    private static final String TAG = TwitterManager.class.getSimpleName();
 
     private TwitterManager() {
     }
@@ -136,6 +138,7 @@ public final class TwitterManager {
                     oos.close();
                 } catch (IOException e) {
                     // no-op
+                    Log.e(TAG, "close error.", e);
                 }
             }
         }
@@ -154,6 +157,7 @@ public final class TwitterManager {
                     ois.close();
                 } catch (IOException e) {
                     // no-op
+                    Log.e(TAG, "close error.", e);
                 }
             }
         }
