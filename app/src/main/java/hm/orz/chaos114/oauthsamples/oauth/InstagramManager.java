@@ -51,7 +51,7 @@ public final class InstagramManager {
     }
 
     @Nullable
-    public static String test(@NonNull Context context) {
+    public static String fetchMedia(@NonNull Context context) {
         SharedPreferencesAccessor accessor = new SharedPreferencesAccessor(context);
         String accessToken = accessor.getInstagramAccessToken();
 

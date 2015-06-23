@@ -35,6 +35,9 @@ android {
         disable 'InvalidPackage',
                 'ContentDescription'
     }
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+    }
 }
 
 dependencies {
@@ -44,11 +47,13 @@ dependencies {
     compile 'com.jakewharton:butterknife:6.1.0'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
+    provided "org.projectlombok:lombok:1.16.4"
 
     // facebook
     compile 'com.facebook.android:facebook-android-sdk:4.1.0'
     // twitter
-    compile 'org.twitter4j:twitter4j-core:4.0.1'
+    compile 'org.twitter4j:twitter4j-core:4.0.3'
+    compile 'org.twitter4j:twitter4j-media-support:4.0.3'
 }
 
 apply from: "https://raw.githubusercontent.com/monstar-lab/gradle-android-ci-check/1.0.0/ci.gradle"
