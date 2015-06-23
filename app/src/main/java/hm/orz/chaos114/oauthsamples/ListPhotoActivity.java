@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -25,7 +26,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -94,7 +98,8 @@ public class ListPhotoActivity extends ActionBarActivity {
                     List<PhotoObject> list = new ArrayList<>();
                     for (int i = 0; i < dataArray.length(); i++) {
                         String lowResulutionImageUrl = dataArray.getJSONObject(i).getJSONObject("images").getJSONObject("low_resolution").getString("url");
-                        list.add(new PhotoObject(lowResulutionImageUrl));
+                        Date date = new Date(Long.parseLong(dataArray.getJSONObject(i).getString("created_time")) * 1000);
+                        list.add(new PhotoObject(lowResulutionImageUrl, date));
                     }
                     setList(list);
                 } catch (JSONException e) {
@@ -139,7 +144,14 @@ public class ListPhotoActivity extends ActionBarActivity {
                     List<PhotoObject> list = new ArrayList<>();
                     for (int i = 0; i < dataArray.length(); i++) {
                         String imageUrl = dataArray.getJSONObject(i).getString("source");
-                        list.add(new PhotoObject(imageUrl));
+                        SimpleDateFormat incomingFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+                        Date date;
+                        try {
+                            date = incomingFormat.parse(dataArray.getJSONObject(i).getString("created_time"));
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                        list.add(new PhotoObject(imageUrl, date));
                     }
                     setList(list);
                 } catch (JSONException e) {
@@ -165,7 +177,8 @@ public class ListPhotoActivity extends ActionBarActivity {
                     Log.d(TAG, "status = " + status);
                     for (ExtendedMediaEntity extendedMediaEntity : status.getExtendedMediaEntities()) {
                         String url = extendedMediaEntity.getMediaURL();
-                        list.add(new PhotoObject(url));
+                        Date date = status.getCreatedAt();
+                        list.add(new PhotoObject(url, date));
                     }
                 }
                 setList(list);
@@ -177,6 +190,7 @@ public class ListPhotoActivity extends ActionBarActivity {
     @AllArgsConstructor(suppressConstructorProperties = true)
     class PhotoObject {
         private String imageUrl;
+        private Date createdTime;
     }
 
     private static class PhotoAdapter extends BaseAdapter {
@@ -215,7 +229,9 @@ public class ListPhotoActivity extends ActionBarActivity {
 
             ImageView imageView = (ImageView) convertView.findViewById(R.id.image);
             Picasso.with(mContext).load(object.getImageUrl()).into(imageView);
-            Log.d(TAG, "imageUrl = " + object.getImageUrl());
+
+            TextView textView = (TextView) convertView.findViewById(R.id.text);
+            textView.setText(object.getCreatedTime().toString());
 
             return convertView;
         }
