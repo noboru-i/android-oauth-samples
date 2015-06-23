@@ -15,6 +15,7 @@ import java.util.List;
 import hm.orz.chaos114.oauthsamples.R;
 import hm.orz.chaos114.oauthsamples.utils.SharedPreferencesAccessor;
 import twitter4j.MediaEntity;
+import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -66,14 +67,19 @@ public final class TwitterManager {
     }
 
     @NonNull
-    public static ResponseList<Status> query(@NonNull Context context) {
+    public static ResponseList<Status> query(@NonNull Context context, String maxId) {
         SharedPreferencesAccessor accessor = new SharedPreferencesAccessor(context);
         AccessToken accessToken = accessor.getTwitterAccessToken();
 
         Twitter twitter = createTwitter(context);
         twitter.setOAuthAccessToken(accessToken);
         try {
-            return twitter.getUserTimeline();
+            Paging paging = new Paging();
+            if (maxId != null) {
+                long maxIdNum = Long.valueOf(maxId) - 1;
+                paging.setMaxId(maxIdNum);
+            }
+            return twitter.getUserTimeline(paging);
         } catch (TwitterException e) {
             throw new RuntimeException(e);
         }

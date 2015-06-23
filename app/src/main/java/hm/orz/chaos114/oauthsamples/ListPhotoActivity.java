@@ -11,33 +11,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.AccessToken;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import hm.orz.chaos114.oauthsamples.model.PhotoProvider;
 import hm.orz.chaos114.oauthsamples.oauth.InstagramManager;
 import hm.orz.chaos114.oauthsamples.oauth.TwitterManager;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import hm.orz.chaos114.oauthsamples.valueobject.PhotoObject;
 import twitter4j.ExtendedMediaEntity;
 import twitter4j.ResponseList;
 
@@ -55,6 +50,7 @@ public class ListPhotoActivity extends ActionBarActivity {
     ListView mListView;
 
     private PhotoAdapter mAdapter;
+    private PhotoProvider mProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,131 +62,50 @@ public class ListPhotoActivity extends ActionBarActivity {
         String provider = getIntent().getStringExtra("provider");
         switch (provider) {
             case "instagram":
-                fetchInstagram();
+                mProvider = App.model().getInstagramPhotoProvider();
                 break;
             case "facebook":
-                fetchFacebook();
+                mProvider = App.model().getFacebookPhotoProvider();
                 break;
             case "twitter":
-                fetchTwitter();
+                mProvider = App.model().getTwitterPhotoProvider();
                 break;
         }
+        fetch();
     }
 
     private void setList(List<PhotoObject> list) {
-        mAdapter = new PhotoAdapter(this, list);
-        mListView.setAdapter(mAdapter);
+        if (mAdapter == null) {
+            View footer = getLayoutInflater().inflate(R.layout.list_footer, null);
+            Button footerButton = (Button) footer.findViewById(R.id.next);
+            footerButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    fetch();
+                }
+            });
+            mListView.addFooterView(footer);
+            mAdapter = new PhotoAdapter(this, list);
+            mListView.setAdapter(mAdapter);
+        }
+        mAdapter.notifyDataSetChanged();
     }
 
-    private void fetchInstagram() {
-        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+    private void fetch() {
+
+        new AsyncTask<Void, Void, Void>() {
+
             @Override
-            protected String doInBackground(Void... params) {
-                return InstagramManager.fetchMedia(ListPhotoActivity.this);
+            protected Void doInBackground(Void... params) {
+                mProvider.fetchNext();
+                return null;
             }
 
             @Override
-            protected void onPostExecute(String s) {
-                try {
-                    JSONObject obj = new JSONObject(s);
-                    JSONArray dataArray = obj.getJSONArray("data");
-
-                    List<PhotoObject> list = new ArrayList<>();
-                    for (int i = 0; i < dataArray.length(); i++) {
-                        String lowResulutionImageUrl = dataArray.getJSONObject(i).getJSONObject("images").getJSONObject("low_resolution").getString("url");
-                        Date date = new Date(Long.parseLong(dataArray.getJSONObject(i).getString("created_time")) * 1000);
-                        list.add(new PhotoObject(lowResulutionImageUrl, date));
-                    }
-                    setList(list);
-                } catch (JSONException e) {
-                    Toast.makeText(ListPhotoActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-                }
-
-            }
-        };
-        task.execute();
-    }
-
-    private void fetchFacebook() {
-
-        final AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        new GraphRequest(accessToken,
-                "/me/photos/uploaded",
-                null,
-                HttpMethod.GET, new GraphRequest.Callback() {
-            @Override
-            public void onCompleted(GraphResponse graphResponse) {
-                try {
-                    JSONObject obj = graphResponse.getJSONObject();
-                    JSONArray dataArray = obj.getJSONArray("data");
-//                    String next = obj.getJSONObject("paging").getString("next");
-//                    GraphRequest request = graphResponse.getRequestForPagedResults(GraphResponse.PagingDirection.NEXT);
-//                    request.setCallback(new GraphRequest.Callback() {
-//
-//                        @Override
-//                        public void onCompleted(GraphResponse graphResponse) {
-//                            try {
-//                                JSONObject obj = graphResponse.getJSONObject();
-//                                Log.d(TAG, "obj2 = " + obj.toString());
-//                                String next = obj.getJSONObject("paging").getString("next");
-//                                Log.d(TAG, "next2 = " + next);
-//                            } catch (JSONException e) {
-//                                throw new RuntimeException(e);
-//                            }
-//                        }
-//                    });
-//                    request.executeAsync();
-
-                    List<PhotoObject> list = new ArrayList<>();
-                    for (int i = 0; i < dataArray.length(); i++) {
-                        String imageUrl = dataArray.getJSONObject(i).getString("source");
-                        SimpleDateFormat incomingFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-                        Date date;
-                        try {
-                            date = incomingFormat.parse(dataArray.getJSONObject(i).getString("created_time"));
-                        } catch (ParseException e) {
-                            throw new RuntimeException(e);
-                        }
-                        list.add(new PhotoObject(imageUrl, date));
-                    }
-                    setList(list);
-                } catch (JSONException e) {
-                    Toast.makeText(ListPhotoActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            }
-        }).executeAsync();
-    }
-
-    private void fetchTwitter() {
-        new AsyncTask<Void, Void, ResponseList<twitter4j.Status>>() {
-
-            @Override
-            protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
-                return TwitterManager.query(ListPhotoActivity.this);
-            }
-
-            @Override
-            protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
-                List<twitter4j.Status> imageList = TwitterManager.filterOnlyImage(statuses);
-                List<PhotoObject> list = new ArrayList<>();
-                for (twitter4j.Status status : imageList) {
-                    Log.d(TAG, "status = " + status);
-                    for (ExtendedMediaEntity extendedMediaEntity : status.getExtendedMediaEntities()) {
-                        String url = extendedMediaEntity.getMediaURL();
-                        Date date = status.getCreatedAt();
-                        list.add(new PhotoObject(url, date));
-                    }
-                }
-                setList(list);
+            protected void onPostExecute(Void aVoid) {
+                setList(mProvider.getList());
             }
         }.execute();
-    }
-
-    @Data
-    @AllArgsConstructor(suppressConstructorProperties = true)
-    class PhotoObject {
-        private String imageUrl;
-        private Date createdTime;
     }
 
     private static class PhotoAdapter extends BaseAdapter {
@@ -201,7 +116,7 @@ public class ListPhotoActivity extends ActionBarActivity {
         public PhotoAdapter(@NonNull Context context, @NonNull List<PhotoObject> list) {
             mContext = context;
             mList = list;
-            mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         @Override
