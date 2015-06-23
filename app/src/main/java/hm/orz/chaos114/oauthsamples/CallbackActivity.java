@@ -73,20 +73,20 @@ public class CallbackActivity extends ActionBarActivity {
     }
 
     private void callbackTwitter(final Uri uri) {
-        AsyncTask<Void, Void, ResponseList<twitter4j.Status>> task = new AsyncTask<Void, Void, ResponseList<twitter4j.Status>>() {
+        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
 
             @Override
-            protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
+            protected Void doInBackground(Void... params) {
                 String token = uri.getQueryParameter("oauth_token");
                 String verifier = uri.getQueryParameter("oauth_verifier");
 
                 TwitterManager.auth(CallbackActivity.this, token, verifier);
 
-                return TwitterManager.query(CallbackActivity.this);
+                return null;
             }
 
             @Override
-            protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
+            protected void onPostExecute(Void aVoid) {
                 ListPhotoActivity.startActivity(CallbackActivity.this, "twitter");
                 finish();
             }

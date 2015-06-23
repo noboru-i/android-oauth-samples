@@ -51,19 +51,24 @@ public final class InstagramManager {
     }
 
     @Nullable
-    public static String fetchMedia(@NonNull Context context) {
+    public static String fetchMedia(@NonNull Context context, String maxId) {
         SharedPreferencesAccessor accessor = new SharedPreferencesAccessor(context);
         String accessToken = accessor.getInstagramAccessToken();
 
         String endpoint = "/users/self/media/recent";
         Map<String, String> params = new TreeMap<>();
         params.put("access_token", accessToken);
+        if (maxId != null) {
+            params.put("max_id", maxId);
+        }
 
         String sig = createSignature(context, endpoint, params);
 
-        String url = Uri.parse("https://api.instagram.com/v1" + endpoint).buildUpon()
-                .appendQueryParameter("access_token", accessToken)
-                .appendQueryParameter("sig", sig).build().toString();
+        Uri.Builder builder = Uri.parse("https://api.instagram.com/v1" + endpoint).buildUpon();
+        for (String key : params.keySet()) {
+            builder.appendQueryParameter(key, params.get(key));
+        }
+        String url = builder.appendQueryParameter("sig", sig).build().toString();
 
         Request request = new Request.Builder()
                 .url(url)
@@ -74,7 +79,6 @@ public final class InstagramManager {
         try {
             Response response = client.newCall(request).execute();
             String responseString = response.body().string();
-            Log.d("TEST", responseString);
             return responseString;
         } catch (IOException e) {
             throw new RuntimeException(e);
