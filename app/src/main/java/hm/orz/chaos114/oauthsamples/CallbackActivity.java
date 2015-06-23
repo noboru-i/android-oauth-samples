@@ -9,19 +9,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.facebook.AccessToken;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
-import com.squareup.picasso.Picasso;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -76,43 +63,13 @@ public class CallbackActivity extends ActionBarActivity {
     private void callbackInstagram(Uri uri) {
         InstagramManager.saveToken(CallbackActivity.this, uri);
 
-        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... params) {
-                return InstagramManager.test(CallbackActivity.this);
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                mTextView.setText(s);
-
-                setSampleImage(s);
-            }
-        };
-        task.execute();
+        ListPhotoActivity.startActivity(this, "instagram");
+        finish();
     }
 
     private void callbackFacebook() {
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        new GraphRequest(accessToken,
-                "/me/photos/uploaded",
-                null,
-                HttpMethod.GET, new GraphRequest.Callback() {
-            @Override
-            public void onCompleted(GraphResponse graphResponse) {
-                try {
-                    String responseString = graphResponse.getRawResponse();
-                    mTextView.setText(responseString);
-
-                    JSONObject obj = graphResponse.getJSONObject();
-                    JSONArray dataArray = obj.getJSONArray("data");
-                    String imageUrl = dataArray.getJSONObject(0).getString("source");
-                    Picasso.with(CallbackActivity.this).load(imageUrl).into(mSampleImageView);
-                } catch (JSONException e) {
-                    Toast.makeText(CallbackActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            }
-        }).executeAsync();
+        ListPhotoActivity.startActivity(this, "facebook");
+        finish();
     }
 
     private void callbackTwitter(final Uri uri) {
@@ -130,26 +87,10 @@ public class CallbackActivity extends ActionBarActivity {
 
             @Override
             protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
-                mTextView.setText(statuses.toString());
-
-                List<twitter4j.Status> imageList = TwitterManager.filterOnlyImage(statuses);
-                if (imageList.size() != 0) {
-                    String url = imageList.get(0).getMediaEntities()[0].getMediaURL();
-                    Picasso.with(CallbackActivity.this).load(url).into(mSampleImageView);
-                }
+                ListPhotoActivity.startActivity(CallbackActivity.this, "twitter");
+                finish();
             }
         };
         task.execute();
-    }
-
-    private void setSampleImage(String jsonString) {
-        try {
-            JSONObject obj = new JSONObject(jsonString);
-            JSONArray dataArray = obj.getJSONArray("data");
-            String lowResulutionImageUrl = dataArray.getJSONObject(0).getJSONObject("images").getJSONObject("low_resolution").getString("url");
-            Picasso.with(this).load(lowResulutionImageUrl).into(mSampleImageView);
-        } catch (JSONException e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-        }
     }
 }

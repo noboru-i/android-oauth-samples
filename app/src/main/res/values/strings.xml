@@ -3,6 +3,7 @@
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_callback">CallbackActivity</string>
+    <string name="title_activity_list_photo">ListPhotoActivity</string>
 
     <string name="provider_name_instagram">Instagram</string>
     <string name="provider_name_facebook">Facebook</string>
