@@ -49,6 +49,8 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     provided "org.projectlombok:lombok:1.16.4"
 
+    compile 'com.deploygate:sdk:3.1'
+
     // facebook
     compile 'com.facebook.android:facebook-android-sdk:4.1.0'
     // twitter
