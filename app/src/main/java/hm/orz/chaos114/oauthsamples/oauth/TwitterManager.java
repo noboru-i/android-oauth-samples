@@ -101,6 +101,20 @@ public final class TwitterManager {
     }
 
     @NonNull
+    public static List<Status> filterOnlyNotRetweet(@NonNull List<Status> source) {
+        List<Status> imageList = new ArrayList<>();
+        for (Status status : source) {
+            if (status.getRetweetedStatus() != null) {
+                continue;
+            }
+
+            imageList.add(status);
+        }
+
+        return imageList;
+    }
+
+    @NonNull
     private static OAuthAuthorization createOAuthAuthorization(@NonNull Context context) {
         String consumerKey = context.getString(R.string.twitter_consumer_key);
         String consumerSecret = context.getString(R.string.twitter_consumer_secret);
