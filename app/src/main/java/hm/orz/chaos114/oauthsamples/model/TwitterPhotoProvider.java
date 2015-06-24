@@ -24,6 +24,7 @@ public final class TwitterPhotoProvider implements PhotoProvider {
 
     Context mContext;
     List<PhotoObject> mList;
+    String mMaxId;
 
     public TwitterPhotoProvider(Context context) {
         mContext = context;
@@ -32,12 +33,10 @@ public final class TwitterPhotoProvider implements PhotoProvider {
 
     @Override
     public void fetchNext() {
-        String maxId = null;
-        if (mList.size() > 0) {
-            maxId = mList.get(mList.size() - 1).getId();
-        }
-        ResponseList<Status> statuses = TwitterManager.query(mContext, maxId);
+        ResponseList<Status> statuses = TwitterManager.query(mContext, mMaxId);
+        mMaxId = Long.toString(statuses.get(statuses.size() - 1).getId());
         List<twitter4j.Status> imageList = TwitterManager.filterOnlyImage(statuses);
+        imageList = TwitterManager.filterOnlyNotRetweet(imageList);
         for (twitter4j.Status status : imageList) {
             for (ExtendedMediaEntity extendedMediaEntity : status.getExtendedMediaEntities()) {
                 String id = Long.toString(status.getId());
