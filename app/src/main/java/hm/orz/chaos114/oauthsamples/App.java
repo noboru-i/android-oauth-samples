@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.deploygate.sdk.DeployGate;
 import com.facebook.FacebookSdk;
+import com.twitter.sdk.android.core.Twitter;
 
 /**
  * Application extended class.
@@ -27,6 +28,7 @@ public class App extends Application {
 
         // initialize
         mModelLocator = ModelLocator.getInstance(this);
+        Twitter.initialize(this);
     }
 
     public static App getInstance() {
