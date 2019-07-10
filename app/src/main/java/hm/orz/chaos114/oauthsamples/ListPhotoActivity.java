@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,29 +15,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import hm.orz.chaos114.oauthsamples.model.PhotoProvider;
-import hm.orz.chaos114.oauthsamples.oauth.InstagramManager;
-import hm.orz.chaos114.oauthsamples.oauth.TwitterManager;
 import hm.orz.chaos114.oauthsamples.valueobject.PhotoObject;
-import twitter4j.ExtendedMediaEntity;
-import twitter4j.ResponseList;
 
 
-public class ListPhotoActivity extends ActionBarActivity {
+public class ListPhotoActivity extends AppCompatActivity {
     private static final String TAG = ListPhotoActivity.class.getSimpleName();
 
     public static void startActivity(Context context, String provider) {
@@ -142,8 +131,10 @@ public class ListPhotoActivity extends ActionBarActivity {
 
             PhotoObject object = getItem(position);
 
-            ImageView imageView = (ImageView) convertView.findViewById(R.id.image);
-            Picasso.with(mContext).load(object.getImageUrl()).into(imageView);
+            if (!TextUtils.isEmpty(object.getImageUrl())) {
+                ImageView imageView = (ImageView) convertView.findViewById(R.id.image);
+                Picasso.get().load(object.getImageUrl()).into(imageView);
+            }
 
             TextView textView = (TextView) convertView.findViewById(R.id.text);
             textView.setText(object.getCreatedTime().toString());

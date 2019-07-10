@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -25,7 +25,7 @@ import hm.orz.chaos114.oauthsamples.oauth.TwitterManager;
 /**
  * Launcher activity.
  */
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
     // facebook callback manager
     CallbackManager mCallbackManager;
 

@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,12 +14,11 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import hm.orz.chaos114.oauthsamples.oauth.InstagramManager;
 import hm.orz.chaos114.oauthsamples.oauth.TwitterManager;
-import twitter4j.ResponseList;
 
 /**
  * OAuth provider callback activity.
  */
-public class CallbackActivity extends ActionBarActivity {
+public class CallbackActivity extends AppCompatActivity {
     private static final String TAG = CallbackActivity.class.getSimpleName();
 
     @InjectView(R.id.callback_textview)

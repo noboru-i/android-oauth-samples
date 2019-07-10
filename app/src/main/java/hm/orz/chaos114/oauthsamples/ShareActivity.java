@@ -60,7 +60,7 @@ public class ShareActivity extends AppCompatActivity {
 
     public void onClickTwitter(View view) {
         Log.d("TAG", "onClickTwitter");
-        Picasso.with(this).load("http://my-android-server.appspot.com/image/high.png")
+        Picasso.get().load("http://my-android-server.appspot.com/image/high.png")
                 .into(new Target() {
                     @Override
                     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -95,7 +95,7 @@ public class ShareActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
+                    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
                         // no-op
                         Log.d("TAG", "onBitmapFailed");
                     }

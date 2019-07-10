@@ -66,7 +66,7 @@ public final class FacebookPhotoProvider implements PhotoProvider, GraphRequest.
 
             for (int i = 0; i < dataArray.length(); i++) {
                 String id = dataArray.getJSONObject(i).getString("id");
-                String imageUrl = dataArray.getJSONObject(i).getString("source");
+                String imageUrl = dataArray.getJSONObject(i).optString("source");
                 SimpleDateFormat incomingFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.JAPAN);
                 Date date;
                 try {
